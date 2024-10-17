@@ -53,6 +53,43 @@
             </form>
           </div>
         @endif
+        <form action="/admin/userCreate" method="POST" class="space-y-4">
+          @csrf
+          <div class="border-t border-gray-200 pt-4">
+            <h2 class="text-lg font-medium text-gray-900">Create user</h2>
+            <div class="mt-4">
+              <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+              <div class="mt-1">
+                <input type="text" name="username" id="username" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+              <div class="mt-1">
+                <input type="password" name="password" id="password" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm password</label>
+              <div class="mt-1">
+                <input type="password" name="password_confirmation" id="password_confirmation" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label for="user_role" class="block text-sm font-medium text-gray-700">Role</label>
+              <div class="mt-1">
+                <select name="user_role" id="user_role" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                  <option value="0">User</option>
+                  <option value="1">Teacher</option>
+                  <option value="2">Admin</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Create user
+          </button>
+        </form>
       </div>
     </div>
   </div>
