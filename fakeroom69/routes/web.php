@@ -2,6 +2,17 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\Admin;
+use App\Http\Controllers\adminController;
+
+
+Route::middleware(['auth', 'Admin'])->group(function () {
+    Route::get('/admin', [adminController::class, 'index']);
+    Route::get('/admin/findUser', [adminController::class, 'findUser']);
+    Route::get('/admin/roleChange', [adminController::class, 'roleChange']);
+    Route::delete('/admin/userDelete', [adminController::class, 'userDelete']);
+});
 
 Route::get('/', function () {
     return view('welcome');
