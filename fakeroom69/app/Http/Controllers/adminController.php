@@ -42,4 +42,23 @@ class adminController extends Controller
         $users = User::all();
         return view("admin", ["users" => $users]);
     }
+    
+    public function userCreate(Request $request) {
+        $request->validate([
+            'username' => 'required|unique:users,username',
+            'password' => 'required|confirmed',
+            'password_confirmation' => 'required',
+            'user_role' => 'required',
+        ]);
+
+        $user = new User();
+        $user->username = $request->username;
+        $user->password = bcrypt($request->password);
+        $user->role = $request->user_role;
+        $user->save();
+
+        $users = User::all();
+        
+        return view("admin", ["users" => $users]);
+    }
 }

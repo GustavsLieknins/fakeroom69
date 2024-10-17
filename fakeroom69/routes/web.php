@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\Admin;
 use App\Http\Controllers\adminController;
 
+Route::post('/admin/userCreate', [adminController::class, 'userCreate'])->middleware('Admin');
 
 Route::middleware(['auth', 'Admin'])->group(function () {
     Route::get('/admin', [adminController::class, 'index']);
