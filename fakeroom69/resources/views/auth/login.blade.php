@@ -13,14 +13,14 @@
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
             <label for="username" class="sr-only">Username</label>
-            <input id="username" name="username" type="text" autocomplete="username" required class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username"/>
+            <input id="username" name="username" type="text" autocomplete="username" required class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username" value="{{ old('username') }}"/>
             @error('username')
               <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password"/>
+            <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password" value="{{ old('password') }}"/>
             @error('password')
               <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -39,3 +39,4 @@
       </form>
     </div>
 </x-guest-layout>
+

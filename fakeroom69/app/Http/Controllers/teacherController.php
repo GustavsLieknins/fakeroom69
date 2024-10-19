@@ -29,7 +29,7 @@ class teacherController extends Controller
                 $join_code = substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 8);
             } while (\App\Models\Classes::where('join_code', $join_code)->exists());
         }
-        $class->join_code = $join_code;
+        $class->join_code = strtoupper($join_code);
         $class->creator_id = auth()->user()->id;
         $class->save();
 
