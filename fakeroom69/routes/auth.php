@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
 
     
     Route::get('/start', [IndexController::class, 'index'])->name('index');
+    Route::get('/', [IndexController::class, 'index'])->name('index');
+
+    
     Route::get('join-class', [IndexController::class, 'joinClass'])->name('joinClass');
     
     

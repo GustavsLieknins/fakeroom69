@@ -1,6 +1,6 @@
 <x-app-layout>
     <style>
-        img {
+        .card-background {
             -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.0));
             object-fit: cover;
@@ -34,6 +34,14 @@
             font-weight: 500;
             transition: background-color 0.2s ease;
         }
+        .side-bar > div > a > button {
+            padding: 10px 20px;
+            background-color: gray;
+            color: white;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
         .side-bar > div > button:hover {
             background-color: #444;
         }
@@ -43,6 +51,11 @@
         }
         .main-wrapper > a > div {
             position: relative;
+            transition: all ease-in-out 0.1s;
+        }
+        .main-wrapper > a:hover > div 
+        {
+            transform: scale(1.06);
         }
         .main-wrapper > a > div > p {
             position: absolute;
@@ -178,6 +191,17 @@
                 opacity: 0;
             }
         }
+     
+            .backdrop {
+                display: none;
+                z-index: 20;
+                position: fixed;
+                backdrop-filter: blur(4px);
+                width: 100vw;
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+            }
     </style>
     @if (session('message') || session('error') || session('error-2'))
         <div class="pop-up-wrapper">
@@ -187,19 +211,26 @@
         </div>
     @endif
     <div class="mainmain-wrapper">
-        <div class="joinclass-div">
-            <p>Enter your code</p>
-            <form action="{{ route('joinClass') }}" method="GET">
-                @csrf
-                <input type="text" name="join_code">
-                <button>Enter</button>
-            </form>
+        <div class="backdrop">
+            <div class="joinclass-div">
+                <p>Enter your code</p>
+                <form action="{{ route('joinClass') }}" method="GET">
+                    @csrf
+                    <input type="text" name="join_code">
+                    <button>Enter</button>
+                </form>
+            </div>
         </div>
         <div class="main-wrapper">
+            @if (auth()->user()->role == 1 || auth()->user()->role == 2 )
+                <p class="text-3xl font-bold text-center">Hi non-student!</p>
+            @elseif ($classes_ids->isEmpty())
+                <p class="text-3xl font-bold text-center">Join classes!</p>
+            @else
             @foreach ($classes_ids as $class_id)
                 <a href="">
                     <div>
-                        <img src="img/fakeroom-background.png" alt="fakeroom-background">
+                        <img class="card-background" src="img/fakeroom-background.png" alt="fakeroom-background">
                         <p class="first">{{ $classes->find($class_id->class_id)->class }}</p>
                         <p class="last">
                             {{ Str::limit($classes->find($class_id->class_id)->description, 45) }}
@@ -207,25 +238,35 @@
                     </div>
                 </a>
             @endforeach
+            @endif
         </div>
         <div class="side-bar">
+            @if (auth()->user()->role == 0)
             <div>
                 <button>Join class</button>
             </div>
+            @else
+            <div>
+            <a href="/teacher"><button>Create class</button></a>
+            </div>
+            @endif
         </div>
     </div>
     <script>
         let joinclassDiv = document.querySelector('.joinclass-div');
+        let backdrop = document.querySelector('.backdrop');
         let joinButton = document.querySelector('.side-bar > div > button');
 
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.joinclass-div') && !event.target.closest('.side-bar > div > button')) {
                 joinclassDiv.style.display = 'none';
+                backdrop.style.display = 'none';
             }
         });
 
         joinButton.addEventListener('click', function() {
             joinclassDiv.style.display = 'flex';
+            backdrop.style.display = 'flex';
         });
     </script>
 </x-app-layout>

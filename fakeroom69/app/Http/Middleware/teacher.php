@@ -22,7 +22,7 @@ class teacher
 
         $userRole=Auth::user()->role;
 
-        if($userRole==1){
+        if($userRole==1 || $userRole == 2){
             return $next($request);
         }else
         {
