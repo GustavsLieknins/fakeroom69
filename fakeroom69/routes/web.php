@@ -7,6 +7,7 @@ use App\Http\Middleware\Admin;
 use App\Http\Middleware\Teacher;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\teacherController;
+use App\Http\Controllers\IndexController;
 
 Route::post('/admin/userCreate', [adminController::class, 'userCreate'])->middleware('Admin');
 
@@ -32,6 +33,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::get("/class/{id}", [IndexController::class, "show"]);
+    Route::get("/showqr/{code}", [IndexController::class, "showqr"])->name('showqr');
+    
 });
 
 require __DIR__.'/auth.php';

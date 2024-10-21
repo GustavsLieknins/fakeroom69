@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('class_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,3 +28,4 @@ return new class extends Migration
         Schema::dropIfExists('class_user');
     }
 };
+

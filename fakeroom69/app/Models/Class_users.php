@@ -9,6 +9,8 @@ class Class_users extends Model
     protected $fillable = [
         'class_id',
         'user_id',
+        'creator_id',
     ];
     
 }
+

@@ -160,7 +160,7 @@
             padding: 30px 10px;
             animation: popup 6s forwards;
             right: 23vw;
-            top: 10px;
+            top: -55px;
 
         }
         .pop-up > p
@@ -177,17 +177,19 @@
         }
         @keyframes popup {
             0% {
+                right: -200px;
                 opacity: 0;
-                /* transform: scale(0.5); */
             }
             3% {
+                right: 10px;
                 opacity: 1;
-                /* transform: scale(1); */
             }
             95% { 
+                right: 10px;
                 opacity: 1;
             }
             100% {
+                right: -200px;
                 opacity: 0;
             }
         }
@@ -196,11 +198,29 @@
                 display: none;
                 z-index: 20;
                 position: fixed;
-                backdrop-filter: blur(4px);
+                backdrop-filter: blur(0px);
                 width: 100vw;
                 top: 0;
                 bottom: 0;
                 height: 100vh;
+                backdrop-filter: blur(3px);
+                animation: backdrop 0.12s;
+            }
+            @keyframes backdrop {
+                0% {
+                    backdrop-filter: blur(0px);
+                }
+                100% {
+                    backdrop-filter: blur(3px);
+                }
+            }
+            .close-icon
+            {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                height: 70px;
+                width: 70px;
             }
     </style>
     @if (session('message') || session('error') || session('error-2'))
@@ -212,6 +232,7 @@
     @endif
     <div class="mainmain-wrapper">
         <div class="backdrop">
+            <img src="img/close.svg" alt="close.svg" class="close-icon">
             <div class="joinclass-div">
                 <p>Enter your code</p>
                 <form action="{{ route('joinClass') }}" method="GET">
@@ -222,13 +243,26 @@
             </div>
         </div>
         <div class="main-wrapper">
-            @if (auth()->user()->role == 1 || auth()->user()->role == 2 )
-                <p class="text-3xl font-bold text-center">Hi non-student!</p>
+            @if (auth()->user()->role == 1)
+                <span class="text-3xl font-bold text-center">Hi teacher! Ur classes: </span>
+            @foreach ($classes_ids as $class_id)
+                <a href="/class/{{ $class_id->class_id }}">
+                    <div>
+                        <img class="card-background" src="img/fakeroom-background.png" alt="fakeroom-background">
+                        <p class="first">{{ $classes->find($class_id->class_id)->class }}</p>
+                        <p class="last">
+                            {{ Str::limit($classes->find($class_id->class_id)->description, 45) }}
+                        </p>
+                    </div>
+                </a>
+            @endforeach
+            @elseif (auth()->user()->role == 2 )
+                <p class="text-3xl font-bold text-center">Hi admin!</p>
             @elseif ($classes_ids->isEmpty())
                 <p class="text-3xl font-bold text-center">Join classes!</p>
             @else
             @foreach ($classes_ids as $class_id)
-                <a href="">
+                <a href="/class/{{ $class_id->class_id }}">
                     <div>
                         <img class="card-background" src="img/fakeroom-background.png" alt="fakeroom-background">
                         <p class="first">{{ $classes->find($class_id->class_id)->class }}</p>
