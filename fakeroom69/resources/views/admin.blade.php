@@ -94,3 +94,12 @@
     </div>
   </div>
 </x-app-layout>
+
+@if (session('message'))
+  <script>
+    window.addEventListener("DOMContentLoaded", function() {
+      alert("{{ session('message') }}");
+    });
+  </script>
+@endif
+

@@ -59,6 +59,6 @@ class adminController extends Controller
 
         $users = User::all();
         
-        return view("admin", ["users" => $users]);
+        return redirect()->back()->with('message', 'User created successfully');
     }
 }

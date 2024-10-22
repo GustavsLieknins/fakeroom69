@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Task;
 use App\Models\TaskFile;
 use App\Models\Comment;
+use App\Models\Rating;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -61,12 +62,13 @@ class IndexController extends Controller
         $tasks = Task::all();
         $tasks_files = TaskFile::where('user_id', $class->creator_id)->get();
         $users = User::all();
+        $rating = Rating::where('user_id', auth()->user()->id)->get();
         
         if (isset($class) && ($available || $available2)) {
             $creator = User::where('id', $class->creator_id)->first();
             $users = User::whereIn('id', Class_users::where('class_id', $id)->pluck('user_id'))->get();
 
-            return view("class-show", ["class" => $class, "creator" => $creator, "tasks" => $tasks, "tasks_files" => $tasks_files, "users" => $users]);
+            return view("class-show", ["class" => $class, "creator" => $creator, "tasks" => $tasks, "tasks_files" => $tasks_files, "users" => $users, "rating" => $rating]);
         }
 
         return redirect("/");
@@ -97,8 +99,9 @@ class IndexController extends Controller
         $tasks_files = TaskFile::where('user_id', $class->creator_id)->get();
         $tasks_files_user = TaskFile::where('user_id', auth()->user()->id)->get();
         $comments = Comment::where('task_id', $id)->get();
+        $rating = Rating::where('user_id', auth()->user()->id)->get();
         $previd = $class_id;
-        return view('class-show-task', compact('task', 'tasks_files', 'comments', 'users', 'previd', 'tasks_files_user'));
+        return view('class-show-task', compact('task', 'tasks_files', 'comments', 'users', 'previd', 'tasks_files_user', 'rating'));
     }
 
     
@@ -139,24 +142,60 @@ class IndexController extends Controller
         // return "done";
     }
 
-public function destroyFile($task, $file)
-{
-    $taskFile = TaskFile::where('task_id', $task)->where('id', $file)->first();
+    public function destroyFile($task, $file)
+    {
+        $taskFile = TaskFile::where('task_id', $task)->where('id', $file)->first();
 
-    if ($taskFile && $taskFile->user_id == auth()->user()->id) {
-        $filePath = public_path($taskFile->path);
+        if ($taskFile && $taskFile->user_id == auth()->user()->id) {
+            $filePath = public_path($taskFile->path);
 
-        if (file_exists($filePath)) {
-            unlink($filePath);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $taskFile->delete();
+
+            return redirect()->back()->with('message', 'File deleted successfully');
         }
 
-        $taskFile->delete();
-
-        return redirect()->back()->with('message', 'File deleted successfully');
+        return redirect()->back()->with('error', 'You do not have permission to delete this file');
     }
+    
+    public function grade($class)
+    {
+        $task = Task::where('id', $class)->first();
+        // $tasks = Task::where('class_id', $class->class_id)->get();
+        $users = User::all();
+        $tasks_files = TaskFile::all();
+        $ratings = Rating::all();
 
-    return redirect()->back()->with('error', 'You do not have permission to delete this file');
-}
+        return view('class-grade', compact('task', 'users', 'tasks_files', 'ratings'));
+    }
+ 
+    
+    public function gradeStore(Request $request, $task)
+    {
+        $task = Task::find($task);
+
+        $request->validate([
+            'rating.*' => 'required|integer|between:1,10',
+        ]);
+
+        foreach ($request->rating as $user_id => $rating) {
+            Rating::updateOrCreate(
+                [
+                    'user_id' => $user_id,
+                    'class_id' => $task->class_id,
+                    'task_id' => $task->id,
+                ],
+                [
+                    'rating' => $rating,
+                ]
+            );
+        }
+
+        return redirect()->back()->with('message', 'Submissions graded successfully');
+    }
 
     // Route::post('/tasks/{task}/files', [IndexController::class, 'storeFiles'])->name('files.store');
     // <form method="POST" action="{{ route('files.store', ['task' => $task->id]) }}" enctype="multipart/form-data" class="joinclass-div flex flex-col items-center p-6 bg-white rounded-lg shadow-lg">
@@ -169,4 +208,5 @@ public function destroyFile($task, $file)
     //                         <button class="mt-4 bg-blue-500 text-white rounded-lg px-4 py-2" type="submit">Submit</button>
     //                     </form>
     
+
 }

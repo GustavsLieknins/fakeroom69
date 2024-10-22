@@ -121,25 +121,34 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white shadow sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200 relative">
-                    @if ($tasks_files_user->count() > 0)
+                    @if ($tasks_files_user->count() > 0 && auth()->user()->role !== 1)
                         <div style="position: absolute; right: 0;" class="bg-green-100 border border-green-400 p-4 rounded-lg">
                             <p class="font-semibold text-green-700">Marked as done</p>
                             <div class="mt-2 space-y-2">
                                 @foreach ($tasks_files_user as $task_file_user)
                                     <div class="flex items-center">
-                                        <a class="block bg-gray-600 text-white rounded-lg px-4 py-2 truncate max-w-xs hover:bg-gray-700" href="{{ asset($task_file_user->path) }}" target="_blank">{{ $task_file_user->file }}</a>
+                                        <a class="bg-gray-600 text-white rounded-lg px-1 py-0.5 truncate max-w-xs hover:bg-gray-700" href="{{ asset($task_file_user->path) }}" target="_blank">{{ Str::limit($task_file_user->file, 20) }}</a>
                                         <form method="POST" action="{{ route('files.destroy', ['task' => $task->id, 'file' => $task_file_user->id]) }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="ml-2 text-red-500 hover:text-red-700">X</button>
+                                            <button type="submit" class="text-red-500 hover:text-red-700 ml-1">X</button>
                                         </form>
                                     </div>
                                 @endforeach
+                                    @if (isset($rating[0]))
+                                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2">
+                                            <p class="font-bold">Your Rating: {{ $rating[0]->rating }}/10</p>
+                                        </div>
+                                    @endif
                             </div>
                         </div>
                     @elseif (auth()->user()->role == 0)
                         <div class="div-done">
                             <button class="button-done but-done">Mark as done</button>
+                        </div>
+                    @elseif (auth()->user()->role == 1)
+                        <div class="flex justify-end">
+                            <a href="{{ route('class.grade', ['class' => $task->id]) }}" class="text-blue-500 hover:text-blue-700 hover:underline">Grade submissions</a>
                         </div>
                     @endif
                     <h1 class="text-3xl font-bold">{{ $task->title }}</h1>
@@ -147,7 +156,7 @@
                     <div class="mt-6">
                         <h2 class="text-lg font-semibold">Files:</h2>
                         <div class="mt-2 space-y-2">
-                            @foreach ($tasks_files as $task_file)
+                            @foreach ($tasks_files->where('task_id', $task->id) as $task_file)
                                 <a class="block bg-gray-600 text-white rounded-lg px-4 py-2 truncate max-w-xs hover:bg-gray-700" href="{{ asset($task_file->path) }}" target="_blank" rel="noopener noreferrer">{{ $task_file->file }}</a>
                             @endforeach
                         </div>
@@ -177,7 +186,7 @@
                         </div>
                         <form action="{{ route('comments.store', ['task' => $task->id]) }}" method="POST" class="mt-4">
                             @csrf
-                            <textarea name="text" id="text" rows="3" class="block w-full bg-white border border-gray-300 rounded-lg p-2"></textarea>
+                            <textarea name="text" id="text" rows="3" class="block w-full bg-white border border-gray-300 rounded-lg p-2 resize-none"></textarea>
                             <input type="hidden" value="{{ $task->id }}" name="task_id">
                             <button type="submit" class="mt-2 bg-gray-500 text-white rounded-lg px-4 py-2">Add comment</button>
                         </form>

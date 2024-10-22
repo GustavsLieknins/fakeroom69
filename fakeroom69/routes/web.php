@@ -35,8 +35,8 @@ Route::middleware(['auth', 'Teacher'])->group(function () {
     
     Route::post('/teacher/{class}', [teacherController::class, 'store'])->name('tasks.store');
     Route::post('/class/{class}/remove-user/{user}', [IndexController::class, 'removeUser'])->name('class.remove.user');
-    
-    
+    Route::get('/class/{class}/grade', [IndexController::class, 'grade'])->name('class.grade');
+    Route::post('/tasks/{task}/grade', [IndexController::class, 'gradeStore'])->name('grade.store');
     
 });
 

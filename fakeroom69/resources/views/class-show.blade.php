@@ -177,9 +177,22 @@
                 height: 35px;
             }
         }
+        .goback
+        {
+            z-index: 30;
+        }
     </style>
     <div class="main-wrapper">
-        <a href="/">
+    @if ($errors->any())
+        <div style="z-index: 1000" class="bg-red-100 border border-red-400 p-4 rounded-lg absolute top-0 right-0 mt-4 mr-4">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+        <a href="/" class="goback">
             <img src="{{ asset('img/back.svg') }}" alt="back.svg" class="backsvg">
         </a>
         <div class="bg-code">
@@ -211,11 +224,11 @@
                         @csrf
                         <div class="my-4">
                             <label for="title" class="block text-lg font-semibold">Title</label>
-                            <input type="text" name="title" id="title" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+                            <input type="text" name="title" id="title" value="{{ old('title') }}" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
                         </div>
                         <div class="my-4">
                             <label for="description" class="block text-lg font-semibold">Description</label>
-                            <input type="text" name="description" id="description" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+                            <input type="text" name="description" id="description" value="{{ old('description') }}" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
                         </div>
                         <div class="my-4">
                             <h3 class="text-lg font-semibold">Add files</h3>
@@ -235,12 +248,18 @@
                     <a href="{{ route('show.task', ['task' => $task->id, 'class_id' => $class->id]) }}">
                         <div class="bg-white p-4 rounded-lg shadow-lg my-4">
                             <h3 class="text-lg font-semibold">{{ $task->title }}</h3>
-                            <p>{{ $task->description }}</p>
-                            <div class="flex flex-row space-x-4">
+                            <p class="text-gray-600">{{ $task->description }}</p>
+                            <div class="mt-4 flex flex-row space-x-4">
                                 @foreach ($tasks_files->where('task_id', $task->id) as $task_file)
                                     <a href="{{ asset($task_file->path) }}" class="bg-gray-500 text-white rounded-lg px-4 py-2 truncate max-w-xs" target="_blank" rel="noopener noreferrer">{{ $task_file->file }}</a>
                                 @endforeach
                             </div>
+                            @php
+                                $userRating = $rating->where('task_id', $task->id)->where('user_id', auth()->user()->id)->first();
+                            @endphp
+                            @if($userRating)
+                                <p class="mt-4 text-sm text-gray-600">Your Grade: {{ $userRating->rating }}</p>
+                            @endif
                         </div>
                     </a>
                 @endforeach
