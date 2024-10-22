@@ -1,3 +1,4 @@
+<x-app-layout>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,3 +91,4 @@
     </table>
 </body>
 </html>
+    </x-app-layout>
