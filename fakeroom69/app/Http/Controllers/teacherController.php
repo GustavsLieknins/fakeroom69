@@ -53,7 +53,7 @@ class teacherController extends Controller
         $task->class_id = $class;
         $task->save();
 
-        $directory = 'tasks';
+        $directory = '';
         $fullPath = public_path($directory);
 
         if (!file_exists($fullPath)) {

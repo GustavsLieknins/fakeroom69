@@ -167,6 +167,18 @@
                         <button type="submit" class="bg-gray-500 text-white rounded-lg px-4 py-2">Create</button>
                     </form>
                 @endif
+                <h2 class="text-2xl font-bold">Tasks</h2>
+                @foreach ($tasks->where('class_id', $class->id) as $task)
+                    <div class="bg-white p-4 rounded-lg shadow-lg my-4">
+                        <h3 class="text-lg font-semibold">{{ $task->title }}</h3>
+                        <p>{{ $task->description }}</p>
+                        <div class="flex flex-row space-x-4">
+                            @foreach ($tasks_files->where('task_id', $task->id) as $task_file)
+                                <a href="{{ asset($task_file->path) }}" class="bg-gray-500 text-white rounded-lg px-4 py-2" target="_blank" rel="noopener noreferrer">{{ $task_file->file }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
                 <p class="text-lg">Creator: {{ $creator->username }}</p>
             </div>
         </div>

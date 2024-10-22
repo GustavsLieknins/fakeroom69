@@ -6,6 +6,8 @@ use App\Models\Class_users;
 use App\Models\Classes;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Task;
+use App\Models\TaskFile;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -55,10 +57,12 @@ class IndexController extends Controller
         $class = Classes::where('id', $id)->first();
         $available = Class_users::where('class_id', $id)->where('user_id', auth()->user()->id)->exists();
         $available2 = Classes::where('id', $id)->where('creator_id', auth()->user()->id)->exists();
+        $tasks = Task::all();
+        $tasks_files = TaskFile::all();
         
         if (isset($class) && ($available || $available2)) {
             $creator = User::where('id', $class->creator_id)->first();
-            return view("class-show", ["class" => $class, "creator" => $creator]);
+            return view("class-show", ["class" => $class, "creator" => $creator, "tasks" => $tasks, "tasks_files" => $tasks_files]);
         }
 
         return redirect("/");
