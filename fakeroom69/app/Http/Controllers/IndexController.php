@@ -19,7 +19,7 @@ class IndexController extends Controller
 
         if(auth()->user()->role == 1)
         {
-            $classes = Classes::all();
+            $classes = Classes::where('creator_id', auth()->user()->id)->get();
             $classes_ids = Class_users::where('creator_id', auth()->user()->id)->get();
         }
         return view('dashboard', compact('classes_ids', 'classes'));
@@ -54,8 +54,9 @@ class IndexController extends Controller
         
         $class = Classes::where('id', $id)->first();
         $available = Class_users::where('class_id', $id)->where('user_id', auth()->user()->id)->exists();
+        $available2 = Classes::where('id', $id)->where('creator_id', auth()->user()->id)->exists();
         
-        if (isset($class) && $available) {
+        if (isset($class) && ($available || $available2)) {
             $creator = User::where('id', $class->creator_id)->first();
             return view("class-show", ["class" => $class, "creator" => $creator]);
         }

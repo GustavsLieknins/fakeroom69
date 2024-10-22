@@ -22,6 +22,9 @@ Route::middleware(['auth', 'Admin'])->group(function () {
 Route::middleware(['auth', 'Teacher'])->group(function () {
     Route::get('/teacher', [teacherController::class, 'index']);
     Route::post('/teacher/create', [teacherController::class, 'create'])->name('create');
+
+    
+    Route::post('/teacher/{class}', [teacherController::class, 'store'])->name('tasks.store');
     
     
 });

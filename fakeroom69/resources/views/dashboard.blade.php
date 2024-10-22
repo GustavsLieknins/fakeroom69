@@ -16,6 +16,16 @@
             padding: 10px;
             align-content: flex-start
         }
+        .title
+        {
+            display: flex;
+        }
+        .title-div
+        {
+            width: 80vw;
+            display: flex;
+            justify-content: center;
+        }
         .side-bar {
             width: 20vw;
             /* border-left: 1px solid gray; */
@@ -222,6 +232,8 @@
                 height: 70px;
                 width: 70px;
             }
+            
+            
     </style>
     @if (session('message') || session('error') || session('error-2'))
         <div class="pop-up-wrapper">
@@ -244,18 +256,18 @@
         </div>
         <div class="main-wrapper">
             @if (auth()->user()->role == 1)
-                <span class="text-3xl font-bold text-center">Hi teacher! Ur classes: </span>
-            @foreach ($classes_ids as $class_id)
-                <a href="/class/{{ $class_id->class_id }}">
-                    <div>
-                        <img class="card-background" src="img/fakeroom-background.png" alt="fakeroom-background">
-                        <p class="first">{{ $classes->find($class_id->class_id)->class }}</p>
-                        <p class="last">
-                            {{ Str::limit($classes->find($class_id->class_id)->description, 45) }}
-                        </p>
-                    </div>
-                </a>
-            @endforeach
+                <div class="title-div"><p class="text-3xl font-bold text-center title">Hi teacher! Ur classes: </p></div>
+                @foreach ($classes as $class)
+                    <a href="/class/{{ $class->id }}">
+                        <div>
+                            <img class="card-background" src="img/fakeroom-background.png" alt="fakeroom-background">
+                            <p class="first">{{ $class->class }}</p>
+                            <p class="last">
+                                {{ Str::limit($class->description, 45) }}
+                            </p>
+                        </div>
+                    </a>
+                @endforeach
             @elseif (auth()->user()->role == 2 )
                 <p class="text-3xl font-bold text-center">Hi admin!</p>
             @elseif ($classes_ids->isEmpty())

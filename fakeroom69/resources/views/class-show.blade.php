@@ -7,11 +7,11 @@
             /* justify-content: center; */
             position: relative;
             align-items: center;
-            height: 61vh;
+            min-height: 61vh;
         }
         .card-background {
             -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-            mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.0));
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
             object-fit: fit;
             border-radius: 4px;
             border: 2px solid gray;
@@ -137,17 +137,54 @@
             </p>
         </div>
         <div class="info-div">
-            <div>
-                <h1>{{ $class->class }}</h1>
-                <p>{{ $class->description }}</p>
-                <button>Show join code</button>
-                <a href="/showqr/{{ $class->join_code }}">Show qr code</a>
-                <p>Creator: {{ $creator->username }}</p>
+            <div class="p-4 space-y-4">
+                <!-- <h1 class="text-4xl font-bold">{{ $class->class }}</h1>
+                <p class="text-xl">{{ $class->description }}</p> -->
+                @if (auth()->user()->role == 1 || auth()->user()->role == 2)
+                    <button class="px-4 py-2 bg-gray-500 text-white rounded-lg">Reveal join code</button>
+                    <a class="px-4 py-2 bg-gray-500 text-white rounded-lg" href="/showqr/{{ $class->join_code }}">Show qr code</a>
+
+                    <form action="{{ route('tasks.store', ['class' => $class->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-4 bg-white p-4 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold">Create task</h2>
+                        @csrf
+                        <div class="my-4">
+                            <label for="title" class="block text-lg font-semibold">Title</label>
+                            <input type="text" name="title" id="title" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+                        </div>
+                        <div class="my-4">
+                            <label for="description" class="block text-lg font-semibold">Description</label>
+                            <input type="text" name="description" id="description" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+                        </div>
+                        <div class="my-4">
+                            <h3 class="text-lg font-semibold">Add files</h3>
+                            <div class="flex flex-row space-x-4">
+                                <input type="file" name="file[]" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+                                <button type="button" id="add-file" class="bg-gray-500 text-white rounded-lg px-4 py-2">Add more</button>
+                            </div>
+                            <div id="file-inputs" class="flex flex-col space-y-2 mt-4">
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-gray-500 text-white rounded-lg px-4 py-2">Create</button>
+                    </form>
+                @endif
+                <p class="text-lg">Creator: {{ $creator->username }}</p>
             </div>
         </div>
     </div>
 
     <script>
+        let addFileButton = document.querySelector('#add-file');
+        let fileInputs = document.querySelector('#file-inputs');
+
+        addFileButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.name = 'file[]';
+            input.classList.add('bg-gray-100', 'border-2', 'border-gray-300', 'rounded-lg', 'p-2', 'w-full');
+            fileInputs.appendChild(input);
+        });
+
 
         let codeDiv = document.querySelector('.code-div');
         let bgCode = document.querySelector('.bg-code');
