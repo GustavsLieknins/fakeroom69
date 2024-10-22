@@ -8,6 +8,7 @@ use App\Http\Middleware\Teacher;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\teacherController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\CalendarController;
 
 Route::post('/admin/userCreate', [adminController::class, 'userCreate'])->middleware('Admin');
 
@@ -18,6 +19,13 @@ Route::middleware(['auth', 'Admin'])->group(function () {
     Route::delete('/admin/userDelete', [adminController::class, 'userDelete']);
     
 });
+
+
+
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+Route::post('/calendar/events', [CalendarController::class, 'store'])->name('events.store');
+
+
 
 Route::middleware(['auth', 'Teacher'])->group(function () {
     Route::get('/teacher', [teacherController::class, 'index']);
