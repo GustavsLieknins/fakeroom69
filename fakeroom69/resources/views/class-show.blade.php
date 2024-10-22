@@ -69,7 +69,8 @@
             width: 60vw;
             border-right: 3px solid black;
             border-left: 3px solid black;
-            min-height: 100%;
+            min-height: 61vh;
+            padding-bottom: 30px;
         }
         .info-div > div
         {
@@ -118,8 +119,69 @@
                 height: 70px;
                 width: 70px;
             }
+
+        /* Mobile view */
+        @media only screen and (max-width: 600px) {
+            .main-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card-background {
+                width: 100vw;
+                height: 25vh;
+            }
+            .big-thing {
+                padding: 20px 20px;
+            }
+            .info-div {
+                width: 100vw;
+                border-right: none;
+                border-left: none;
+            }
+            .code-div {
+                width: 100vw;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .first 
+            {
+                bottom: 120px;
+                font-size: xx-large;
+            }
+            .last 
+            {
+                bottom: 100px;
+                font-size: small;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 45ch;
+            }
+        }
+
+        .backsvg
+        {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 45px;
+            height: 45px;
+        }
+        @media only screen and (max-width: 600px) {
+            .backsvg
+            {
+                top: 5px;
+                width: 35px;
+                height: 35px;
+            }
+        }
     </style>
     <div class="main-wrapper">
+        <a href="/">
+            <img src="{{ asset('img/back.svg') }}" alt="back.svg" class="backsvg">
+        </a>
         <div class="bg-code">
             <img src="../img/close.svg" alt="close.svg" class="close-icon">
             <div class="code-div">
@@ -167,20 +229,38 @@
                         <button type="submit" class="bg-gray-500 text-white rounded-lg px-4 py-2">Create</button>
                     </form>
                 @endif
+                <p class="text-lg">Creator: {{ $creator->username }}</p>
                 <h2 class="text-2xl font-bold">Tasks</h2>
                 @foreach ($tasks->where('class_id', $class->id) as $task)
-                    <div class="bg-white p-4 rounded-lg shadow-lg my-4">
-                        <h3 class="text-lg font-semibold">{{ $task->title }}</h3>
-                        <p>{{ $task->description }}</p>
-                        <div class="flex flex-row space-x-4">
-                            @foreach ($tasks_files->where('task_id', $task->id) as $task_file)
-                                <a href="{{ asset($task_file->path) }}" class="bg-gray-500 text-white rounded-lg px-4 py-2" target="_blank" rel="noopener noreferrer">{{ $task_file->file }}</a>
-                            @endforeach
+                    <a href="{{ route('show.task', ['task' => $task->id, 'class_id' => $class->id]) }}">
+                        <div class="bg-white p-4 rounded-lg shadow-lg my-4">
+                            <h3 class="text-lg font-semibold">{{ $task->title }}</h3>
+                            <p>{{ $task->description }}</p>
+                            <div class="flex flex-row space-x-4">
+                                @foreach ($tasks_files->where('task_id', $task->id) as $task_file)
+                                    <a href="{{ asset($task_file->path) }}" class="bg-gray-500 text-white rounded-lg px-4 py-2 truncate max-w-xs" target="_blank" rel="noopener noreferrer">{{ $task_file->file }}</a>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
-                <p class="text-lg">Creator: {{ $creator->username }}</p>
             </div>
+            @if (auth()->user()->role == 1)
+                <h2 class="text-2xl font-bold">Users:</h2>
+                    <ul class="list-disc pl-4 space-y-2">
+                        @foreach ($users as $user)
+                            <li class="text-lg flex items-center">
+                                {{ $user->username }}
+                                @if (auth()->user()->role == 1)
+                                    <form action="{{ route('class.remove.user', ['class' => $class->id, 'user' => $user->id]) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-red-500 hover:text-red-700 ml-2">X</button>
+                                    </form>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
         </div>
     </div>
 
@@ -214,6 +294,5 @@
             bgCode.style.display = 'flex';
         });
         
-    </script>
-</x-app-layout>
-
+        </script>
+    </x-app-layout>

@@ -67,8 +67,9 @@ class teacherController extends Controller
 
                 $taskFile = new TaskFile();
                 $taskFile->task_id = $task->id;
-                $taskFile->file = $directory . '/' . $fileName;
+                $taskFile->file = $directory . $fileName;
                 $taskFile->path = $directory . '/' . $fileName;
+                $taskFile->user_id = auth()->user()->id;
                 $taskFile->save();
             }
         }

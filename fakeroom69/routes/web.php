@@ -9,6 +9,7 @@ use App\Http\Controllers\adminController;
 use App\Http\Controllers\teacherController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CommentController;
 
 Route::post('/admin/userCreate', [adminController::class, 'userCreate'])->middleware('Admin');
 
@@ -33,6 +34,8 @@ Route::middleware(['auth', 'Teacher'])->group(function () {
 
     
     Route::post('/teacher/{class}', [teacherController::class, 'store'])->name('tasks.store');
+    Route::post('/class/{class}/remove-user/{user}', [IndexController::class, 'removeUser'])->name('class.remove.user');
+    
     
     
 });
@@ -48,6 +51,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get("/class/{id}", [IndexController::class, "show"]);
     Route::get("/showqr/{code}", [IndexController::class, "showqr"])->name('showqr');
+    Route::get('/tasks/{task}/{class_id}', [IndexController::class, 'showTask'])->name('show.task');
+
+
+    Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
+
+    Route::post('/tasks/{task}/files', [IndexController::class, 'storeFiles'])->name('files.store');
+    
+    Route::delete('/tasks/{task}/files/{file}', [IndexController::class, 'destroyFile'])->name('files.destroy');
     
 });
 

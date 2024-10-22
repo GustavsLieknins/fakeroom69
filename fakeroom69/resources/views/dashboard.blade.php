@@ -146,6 +146,20 @@
                 bottom: 40px;
                 max-width: 35ch;
             }
+            .side-bar > div {
+                /* width: 10vw; */
+                font-size: medium;
+                /* padding: 5px; */
+            }
+            .side-bar > div > a {
+                width: 18vw;
+                /* margin: 5px; */
+                height: max-content;
+            }
+            .side-bar > div > a > button {
+                width: 18vw;
+                padding: 5px 10px;
+            }
         }
 
 

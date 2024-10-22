@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Task;
 use App\Models\TaskFile;
+use App\Models\Comment;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -58,11 +59,14 @@ class IndexController extends Controller
         $available = Class_users::where('class_id', $id)->where('user_id', auth()->user()->id)->exists();
         $available2 = Classes::where('id', $id)->where('creator_id', auth()->user()->id)->exists();
         $tasks = Task::all();
-        $tasks_files = TaskFile::all();
+        $tasks_files = TaskFile::where('user_id', $class->creator_id)->get();
+        $users = User::all();
         
         if (isset($class) && ($available || $available2)) {
             $creator = User::where('id', $class->creator_id)->first();
-            return view("class-show", ["class" => $class, "creator" => $creator, "tasks" => $tasks, "tasks_files" => $tasks_files]);
+            $users = User::whereIn('id', Class_users::where('class_id', $id)->pluck('user_id'))->get();
+
+            return view("class-show", ["class" => $class, "creator" => $creator, "tasks" => $tasks, "tasks_files" => $tasks_files, "users" => $users]);
         }
 
         return redirect("/");
@@ -83,4 +87,86 @@ class IndexController extends Controller
         // ->generate('http://127.0.0.1:8000/join-class?join_code='.$code);
         return view('qrCode', ['code' => $code]);
     }
+
+    
+    public function showTask($id, $class_id)
+    {
+        $class = Classes::where('id', $class_id)->first();
+        $task = Task::find($id);
+        $users = User::all();
+        $tasks_files = TaskFile::where('user_id', $class->creator_id)->get();
+        $tasks_files_user = TaskFile::where('user_id', auth()->user()->id)->get();
+        $comments = Comment::where('task_id', $id)->get();
+        $previd = $class_id;
+        return view('class-show-task', compact('task', 'tasks_files', 'comments', 'users', 'previd', 'tasks_files_user'));
+    }
+
+    
+    public function removeUser(Request $request, $class, $user)
+    {
+        Class_users::where('class_id', $class)->where('user_id', $user)->delete();
+        return redirect()->back()->with('message', 'User has been removed from the class');
+    }
+    public function storeFiles(Request $request, $task)
+    {
+        $request->validate([
+            'file.*' => 'required|file|mimes:pdf,doc,docx,svg,jpg,png|max:2048',
+        ]);
+
+        $directory = '';
+        $fullPath = public_path($directory);
+
+        if (!file_exists($fullPath)) {
+            mkdir($fullPath, 0777, true);
+        }
+    
+        if ($request->hasfile('file')) {
+            foreach ($request->file('file') as $file) {
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move($fullPath, $fileName);
+
+                $taskFile = new TaskFile();
+                $taskFile->task_id = $task;
+                $taskFile->file = $directory . $fileName;
+                $taskFile->path = $directory . '/' . $fileName;
+                $taskFile->user_id = auth()->user()->id;
+                $taskFile->save();
+                // return "here";
+            }
+        }
+
+        return redirect()->back()->with('message', 'Files uploaded successfully');
+        // return "done";
+    }
+
+public function destroyFile($task, $file)
+{
+    $taskFile = TaskFile::where('task_id', $task)->where('id', $file)->first();
+
+    if ($taskFile && $taskFile->user_id == auth()->user()->id) {
+        $filePath = public_path($taskFile->path);
+
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $taskFile->delete();
+
+        return redirect()->back()->with('message', 'File deleted successfully');
+    }
+
+    return redirect()->back()->with('error', 'You do not have permission to delete this file');
+}
+
+    // Route::post('/tasks/{task}/files', [IndexController::class, 'storeFiles'])->name('files.store');
+    // <form method="POST" action="{{ route('files.store', ['task' => $task->id]) }}" enctype="multipart/form-data" class="joinclass-div flex flex-col items-center p-6 bg-white rounded-lg shadow-lg">
+    //                         @csrf
+    //                         <p class="text-lg font-semibold">Add files</p>
+    //                         <div class="file-div flex flex-col space-y-2 mt-4">
+    //                             <input type="file" name="file[]" class="bg-gray-100 border-2 border-gray-300 rounded-lg p-2 w-full">
+    //                             <button class="add-more bg-gray-500 text-white rounded-lg px-4 py-2">Add more files</button>
+    //                         </div>
+    //                         <button class="mt-4 bg-blue-500 text-white rounded-lg px-4 py-2" type="submit">Submit</button>
+    //                     </form>
+    
 }
