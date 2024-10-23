@@ -97,9 +97,9 @@ class IndexController extends Controller
         $task = Task::find($id);
         $users = User::all();
         $tasks_files = TaskFile::where('user_id', $class->creator_id)->get();
-        $tasks_files_user = TaskFile::where('user_id', auth()->user()->id)->get();
+        $tasks_files_user = TaskFile::where('user_id', auth()->user()->id)->where('task_id', $id)->get();
         $comments = Comment::where('task_id', $id)->get();
-        $rating = Rating::where('user_id', auth()->user()->id)->get();
+        $rating = Rating::where('user_id', auth()->user()->id)->where('task_id', $id)->get();
         $previd = $class_id;
         return view('class-show-task', compact('task', 'tasks_files', 'comments', 'users', 'previd', 'tasks_files_user', 'rating'));
     }
@@ -154,7 +154,7 @@ class IndexController extends Controller
             }
 
             $taskFile->delete();
-
+            $ratings = Rating::where('user_id', $taskFile->user_id)->where('task_id', $task)->delete();
             return redirect()->back()->with('message', 'File deleted successfully');
         }
 
