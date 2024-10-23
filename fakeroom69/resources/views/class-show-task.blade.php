@@ -167,7 +167,7 @@
                             @foreach ($comments->reverse()->take(5) as $comment)
                                 <div class="bg-gray-100 p-4 rounded-lg">
                                     <p class="text-gray-700">{{ $comment->text }}</p>
-                                    <p class="text-gray-500 text-sm">{{ $comment->created_at->format('d.m.Y H:i') }} by {{ $users[ $comment->user_id - 1 ]->username }}</p>
+                                    <p class="text-gray-500 text-sm">{{ $comment->created_at->format('d.m.Y H:i') }} by {{ $users[ $comment->user_id - 2 ]->username }}</p>
                                 </div>
                             @endforeach
                             @if ($comments->count() > 5)
@@ -178,7 +178,7 @@
                                     @foreach ($comments->reverse()->skip(5) as $comment)
                                         <div class="bg-gray-100 p-4 rounded-lg">
                                             <p class="text-gray-700">{{ $comment->text }}</p>
-                                            <p class="text-gray-500 text-sm">{{ $comment->created_at->format('d.m.Y H:i') }} by {{ $users[ $comment->user_id - 1]->username }}</p>
+                                            <p class="text-gray-500 text-sm">{{ $comment->created_at->format('d.m.Y H:i') }} by {{ $users[ $comment->user_id - 2]->username }}</p>
                                         </div>
                                     @endforeach
                                 </div>
